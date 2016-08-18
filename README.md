@@ -29,7 +29,7 @@ exit early before thoroughly exercising your app. This limit defaults to 1000.
 
     $ pingthing -u "http://localhost:3000/movies"
 
-![Screenshot](examples/screen_shot.png)
+![Screenshot](examples/results.png)
 
 ## Contributing
 
