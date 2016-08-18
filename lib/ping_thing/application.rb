@@ -32,8 +32,8 @@ module PingThing
         OptionParser.new do |opts|
           opts.banner = 'Usage: pingthing [options]'
 
-          opts.on('-u', '-url') { |u| options[:url] = u }
-          opts.on('-l', '-limit') { |l| options[:limit] }
+          opts.on('-u', '-url', 'The url to start the spider') { |u| options[:url] = u }
+          opts.on('-l', '-limit', 'A limit for non-matching domains before exiting') { |l| options[:limit] }
         end.parse!
       end
     end
