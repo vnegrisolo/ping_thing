@@ -1,4 +1,4 @@
 #!/usr/bin/env ruby
-require_relative "../lib/ping_thing"
+require "ping_thing"
 
 PingThing::Application.run(ARGV)

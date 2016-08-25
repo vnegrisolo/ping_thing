@@ -1,16 +1,15 @@
 module PingThing
   class Application
-    LIMIT = 1000
     attr_reader :success, :failure
 
-    def self.run(args)
-      new(args).run
+    def self.run(argv)
+      new(argv).run
     end
 
     def initialize(argv)
       @failure = {}
       @success = {}
-      @options = parse_options(argv)
+      @options = Options.parse(argv)
       @url     = url
       @host    = host
       @limit   = limit
@@ -24,18 +23,7 @@ module PingThing
     end
 
     def limit
-      @options[:limit] || LIMIT
-    end
-
-    def parse_options(argv)
-      {}.tap do |options|
-        OptionParser.new do |opts|
-          opts.banner = 'Usage: pingthing [options]'
-
-          opts.on('-u', '-url', 'The url to start the spider') { |u| options[:url] = u }
-          opts.on('-l', '-limit', 'A limit for non-matching domains before exiting') { |l| options[:limit] }
-        end.parse!
-      end
+      @options[:limit]
     end
 
     def host
