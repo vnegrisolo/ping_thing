@@ -1,26 +1,33 @@
 module PingThing
   class Report
-    def initialize(success, failure)
-      @success = success
-      @failure = failure
+    def initialize
+      @success_count = 0
+      @failure = {}
     end
 
-    def success_count
-      @success.keys.count
+    def add(link, status)
+      print "#{link}".colorize(:blue) + ' => '
+      if status =~ /[23]\d{2}/
+        puts status.colorize(:green)
+        @success += 1
+      else
+        puts status.colorize(:red)
+        @failure[link] = status
+      end
     end
 
     def failure_count
-      @failure.keys.count
+      @failure.count
     end
 
     def number_of_requests
-      success_count + failure_count
+      @success_count + failure_count
     end
 
     def display
       puts
       puts "#{number_of_requests} total links hit"
-      puts "+ #{success_count} successful responses".colorize(:green)
+      puts "+ #{@success_count} successful responses".colorize(:green)
       puts
       puts 'Failures:'
       puts
@@ -33,4 +40,3 @@ module PingThing
     end
   end
 end
-
