@@ -1,40 +1,62 @@
 module PingThing
   class Report
     def initialize
-      @success_count = 0
-      @failure = {}
+      @urls = {}
     end
 
-    def add(link, status)
+    def add(origin, dest)
+      url = @urls[dest] ||= {
+        status: visit(dest),
+        destination: dest,
+        origins: []
+      }
+      url[:origins] << origin
+    end
+
+    def visit(link)
+      status = Faraday.head(link).status.to_s
+      log_visit(link, status)
+      status
+    end
+
+    def log_visit(link, status)
       print "#{link}".colorize(:blue) + ' => '
-      if status =~ /[23]\d{2}/
+      if success?(status)
         puts status.colorize(:green)
-        @success += 1
       else
         puts status.colorize(:red)
-        @failure[link] = status
       end
     end
 
-    def failure_count
-      @failure.count
+    def success?(status)
+      status =~ /[23]\d{2}/
     end
 
-    def number_of_requests
-      @success_count + failure_count
+    def successes
+      @urls.values.map do |url|
+        url if success?(url[:status])
+      end.compact
+    end
+
+    def failures
+      @urls.values.map do |url|
+        url unless success?(url[:status])
+      end.compact
     end
 
     def display
       puts
-      puts "#{number_of_requests} total links hit"
-      puts "+ #{@success_count} successful responses".colorize(:green)
+      puts "#{@urls.count} total links hit"
+      puts "+ #{successes.count} successful responses".colorize(:green)
+      puts "- #{failures.count} unsuccessful responses".colorize(:red)
+      display_failures if failures.count > 0
+    end
+
+    def display_failures
+      puts 'Failures:'.colorize(:red)
       puts
-      puts 'Failures:'
-      puts
-      puts "- #{failure_count} unsuccessful responses".colorize(:red)
-      puts
-      @failure.each_with_index do |(k, v), i|
-        puts "#{i + 1})" + " #{k} => " + "#{v}".colorize(:red)
+      failures.each_with_index do |(failure), i|
+        puts "#{i + 1}) => #{failure.to_s.colorize(:red)}"
         puts
       end
     end

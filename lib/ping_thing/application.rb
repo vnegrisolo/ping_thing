@@ -27,13 +27,12 @@ module PingThing
     def run
       count = 0
       Spidr.start_at(url) do |spider|
-        spider.every_url do |link|
+        spider.every_link do |origin, dest|
           count += 1
           exit if count == limit
-          next unless link.host =~ /#{host}/
+          next unless dest.host =~ /#{host}/
 
-          status = Faraday.head(link).status.to_s
-          @report.add(link, status)
+          @report.add(origin.to_s, dest.to_s)
           count = 0
         end
       end
