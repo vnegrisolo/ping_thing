@@ -30,7 +30,7 @@ module PingThing
         spider.every_link do |origin, dest|
           count += 1
           exit if count == limit
-          next unless dest.host =~ /#{host}/
+          next unless origin.host =~ /#{host}/
 
           @report.add(origin.to_s, dest.to_s)
           count = 0

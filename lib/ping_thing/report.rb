@@ -17,6 +17,8 @@ module PingThing
       status = Faraday.head(dest).status.to_s
       log_visit(origin, dest, status)
       status
+    rescue URI::InvalidURIError
+    rescue Faraday::ConnectionFailed
     end
 
     def log_visit(origin, dest, status)
