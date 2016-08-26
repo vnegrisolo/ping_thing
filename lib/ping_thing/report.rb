@@ -6,7 +6,7 @@ module PingThing
 
     def add(origin, dest)
       url = @urls[dest] ||= {
-        status: visit(origin, dest),
+        status: visit(origin, dest) || "",
         destination: dest,
         origins: []
       }
@@ -35,15 +35,13 @@ module PingThing
     end
 
     def successes
-      @urls.values.map do |url|
+      @successes ||= @urls.values.map do |url|
         url if success?(url[:status])
       end.compact
     end
 
     def failures
-      @urls.values.map do |url|
-        url unless success?(url[:status])
-      end.compact
+      @failures ||= @urls.values - successes
     end
 
     def display
@@ -58,7 +56,11 @@ module PingThing
       puts 'Failures:'.colorize(:red)
       puts
       failures.each_with_index do |(failure), i|
-        puts "#{i + 1}) => #{failure.to_s.colorize(:red)}"
+        puts "#{i + 1}) => {"
+        puts "status: #{failure[:status].colorize(:red)},"
+        puts "destination: #{failure[:destination].colorize(:red)},"
+        puts "origins: #{failure[:origins].uniq},"
+        puts "}"
         puts
       end
     end
