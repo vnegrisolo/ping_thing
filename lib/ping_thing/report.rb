@@ -6,25 +6,25 @@ module PingThing
 
     def add(origin, dest)
       url = @urls[dest] ||= {
-        status: visit(dest),
+        status: visit(origin, dest),
         destination: dest,
         origins: []
       }
       url[:origins] << origin
     end
 
-    def visit(link)
-      status = Faraday.head(link).status.to_s
-      log_visit(link, status)
+    def visit(origin, dest)
+      status = Faraday.head(dest).status.to_s
+      log_visit(origin, dest, status)
       status
     end
 
-    def log_visit(link, status)
-      print "#{link}".colorize(:blue) + ' => '
+    def log_visit(origin, dest, status)
+      print "#{dest}".colorize(:blue) + ' => '
       if success?(status)
         puts status.colorize(:green)
       else
-        puts status.colorize(:red)
+        puts "#{status.colorize(:red)} => from: #{origin.colorize(:cyan)}"
       end
     end
 
